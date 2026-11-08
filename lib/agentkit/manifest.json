@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "version": "1.0.0",
+  "product": "pipmcp",
+  "credential": "PIPMCP_API_KEY",
+  "skills": [
+    {
+      "name": "pipmcp-datadog",
+      "description": "Connect AI agents to Datadog using one PipMCP API key and actual hosted tool discovery."
+    }
+  ],
+  "files": {
+    "skills/pipmcp-datadog/SKILL.md": "f2ca223b62216734ff6d1e8078a5d2427d2768c1bb443c61047e8409392c3c63"
+  }
+}
