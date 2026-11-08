@@ -1,0 +1,357 @@
+{
+  "schemaVersion": 1,
+  "id": "datadog-mcp",
+  "kind": "provider-connector",
+  "artifactType": "connector",
+  "qualityVersion": 2,
+  "title": "Datadog MCP server",
+  "description": "Review monitors then record an approved operational event. Read provider data first, then explicitly approve the selected change with operator write opt-in and a unique per-call approval key.",
+  "status": "ready",
+  "verification": "mock-only",
+  "releaseEligible": true,
+  "maintainer": "jannikco",
+  "license": "MIT",
+  "product": "pipmcp",
+  "appSlug": "datadog",
+  "appName": "Datadog",
+  "operationIds": [
+    "validate_api_key",
+    "list_monitors",
+    "create_event"
+  ],
+  "sourceRevision": "94d7431a8f8bd83a7e4d0df9b475d52688fdc6dd315b8fc2248e8f32c4578c0f",
+  "evidence": [
+    "Actual tools/call and direct-provider request contract tests"
+  ],
+  "provenance": [
+    "https://docs.datadoghq.com/api/latest/using-the-api/",
+    "https://docs.datadoghq.com/api/latest/authentication/",
+    "https://docs.datadoghq.com/api/latest/monitors/",
+    "https://docs.datadoghq.com/api/latest/events/"
+  ],
+  "attributionSlug": "github-datadog-mcp",
+  "connectorId": "datadog",
+  "connector": {
+    "id": "datadog",
+    "appSlug": "datadog",
+    "name": "Datadog",
+    "version": "0.2.0",
+    "baseUrl": "https://{DATADOG_API_HOST}",
+    "auth": {
+      "type": "header",
+      "header": "DD-API-KEY",
+      "env": "DATADOG_API_KEY",
+      "extraHeaders": {
+        "DD-APPLICATION-KEY": {
+          "env": "DATADOG_APP_KEY"
+        }
+      }
+    },
+    "tools": [
+      {
+        "name": "validate_api_key",
+        "description": "Validate api key.",
+        "method": "GET",
+        "path": "/api/v1/validate",
+        "readOnly": true,
+        "inputSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "bindings": {
+          "path": [],
+          "query": {},
+          "body": {}
+        },
+        "sampleArguments": {},
+        "provenance": [
+          "https://docs.datadoghq.com/api/latest/using-the-api/",
+          "https://docs.datadoghq.com/api/latest/authentication/",
+          "https://docs.datadoghq.com/api/latest/monitors/",
+          "https://docs.datadoghq.com/api/latest/events/"
+        ],
+        "approvalRequired": false,
+        "evidence": {
+          "providerLiveValidation": "not-run",
+          "localValidation": "provider-request-fixture"
+        }
+      },
+      {
+        "name": "list_monitors",
+        "description": "List monitors.",
+        "method": "GET",
+        "path": "/api/v1/monitor",
+        "readOnly": true,
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000
+            },
+            "page_size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "bindings": {
+          "path": [],
+          "query": {
+            "page": "page",
+            "page_size": "page_size"
+          },
+          "body": {}
+        },
+        "sampleArguments": {
+          "page": 0,
+          "page_size": 10
+        },
+        "provenance": [
+          "https://docs.datadoghq.com/api/latest/using-the-api/",
+          "https://docs.datadoghq.com/api/latest/authentication/",
+          "https://docs.datadoghq.com/api/latest/monitors/",
+          "https://docs.datadoghq.com/api/latest/events/"
+        ],
+        "approvalRequired": false,
+        "evidence": {
+          "providerLiveValidation": "not-run",
+          "localValidation": "provider-request-fixture"
+        }
+      },
+      {
+        "name": "create_event",
+        "description": "Create event.",
+        "method": "POST",
+        "path": "/api/v1/events",
+        "readOnly": false,
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048,
+              "description": "Value"
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048,
+              "description": "Value"
+            },
+            "alert_type": {
+              "type": "string",
+              "enum": [
+                "error",
+                "warning",
+                "info",
+                "success"
+              ]
+            }
+          },
+          "required": [
+            "title",
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        "bindings": {
+          "path": [],
+          "query": {},
+          "body": {
+            "title": "title",
+            "text": "text",
+            "alert_type": "alert_type"
+          }
+        },
+        "sampleArguments": {
+          "title": "Reviewed release",
+          "text": "Approved release completed",
+          "alert_type": "info"
+        },
+        "provenance": [
+          "https://docs.datadoghq.com/api/latest/using-the-api/",
+          "https://docs.datadoghq.com/api/latest/authentication/",
+          "https://docs.datadoghq.com/api/latest/monitors/",
+          "https://docs.datadoghq.com/api/latest/events/"
+        ],
+        "approvalRequired": true,
+        "evidence": {
+          "providerLiveValidation": "not-run",
+          "localValidation": "provider-request-fixture"
+        }
+      }
+    ],
+    "workflow": {
+      "name": "Review monitors then record an approved operational event",
+      "description": "Review monitors then record an approved operational event. Read provider data first, then explicitly approve the selected change with operator write opt-in and a unique per-call approval key.",
+      "steps": [
+        "validate_api_key",
+        "list_monitors",
+        "create_event"
+      ]
+    },
+    "provenance": [
+      "https://docs.datadoghq.com/api/latest/using-the-api/",
+      "https://docs.datadoghq.com/api/latest/authentication/",
+      "https://docs.datadoghq.com/api/latest/monitors/",
+      "https://docs.datadoghq.com/api/latest/events/"
+    ],
+    "verification": "mock-only",
+    "providerLiveValidation": "not-run",
+    "capabilityEvidence": {
+      "local": {
+        "level": "Tested",
+        "operations": [
+          {
+            "name": "validate_api_key",
+            "level": "Tested",
+            "evidenceRefs": [
+              "Provider request/stdio contract tests"
+            ],
+            "method": "contract-fixture"
+          },
+          {
+            "name": "list_monitors",
+            "level": "Tested",
+            "evidenceRefs": [
+              "Provider request/stdio contract tests"
+            ],
+            "method": "contract-fixture"
+          },
+          {
+            "name": "create_event",
+            "level": "Tested",
+            "evidenceRefs": [
+              "Provider request/stdio contract tests"
+            ],
+            "method": "contract-fixture"
+          }
+        ],
+        "evidenceRefs": [
+          "Provider request/stdio contract tests"
+        ],
+        "mode": "local"
+      },
+      "managed": {
+        "level": "Documented",
+        "operations": [
+          {
+            "name": "validate_api_key",
+            "level": "Documented",
+            "evidenceRefs": [],
+            "method": "documentation"
+          },
+          {
+            "name": "list_monitors",
+            "level": "Documented",
+            "evidenceRefs": [],
+            "method": "documentation"
+          },
+          {
+            "name": "create_event",
+            "level": "Documented",
+            "evidenceRefs": [],
+            "method": "documentation"
+          }
+        ],
+        "evidenceRefs": [],
+        "mode": "managed"
+      }
+    },
+    "hostVariables": [
+      "DATADOG_API_HOST"
+    ],
+    "allowedHostSuffixes": [
+      "datadoghq.com",
+      "datadoghq.eu",
+      "ddog-gov.com"
+    ],
+    "sampleEnvironment": {
+      "DATADOG_API_HOST": "api.datadoghq.com"
+    },
+    "repoId": "datadog-mcp",
+    "product": "pipmcp",
+    "artifactType": "connector",
+    "sourceRevision": "94d7431a8f8bd83a7e4d0df9b475d52688fdc6dd315b8fc2248e8f32c4578c0f",
+    "managedAvailability": {
+      "status": "import-required",
+      "integration": "openapi-to-mcp",
+      "checkedAt": "2026-11-08T13:20:45.156456+00:00"
+    }
+  },
+  "capabilityEvidence": {
+    "local": {
+      "level": "Tested",
+      "operations": [
+        {
+          "name": "validate_api_key",
+          "level": "Tested",
+          "evidenceRefs": [
+            "Provider request/stdio contract tests"
+          ],
+          "method": "contract-fixture"
+        },
+        {
+          "name": "list_monitors",
+          "level": "Tested",
+          "evidenceRefs": [
+            "Provider request/stdio contract tests"
+          ],
+          "method": "contract-fixture"
+        },
+        {
+          "name": "create_event",
+          "level": "Tested",
+          "evidenceRefs": [
+            "Provider request/stdio contract tests"
+          ],
+          "method": "contract-fixture"
+        }
+      ],
+      "evidenceRefs": [
+        "Provider request/stdio contract tests"
+      ],
+      "mode": "local"
+    },
+    "managed": {
+      "level": "Documented",
+      "operations": [
+        {
+          "name": "validate_api_key",
+          "level": "Documented",
+          "evidenceRefs": [],
+          "method": "documentation"
+        },
+        {
+          "name": "list_monitors",
+          "level": "Documented",
+          "evidenceRefs": [],
+          "method": "documentation"
+        },
+        {
+          "name": "create_event",
+          "level": "Documented",
+          "evidenceRefs": [],
+          "method": "documentation"
+        }
+      ],
+      "evidenceRefs": [],
+      "mode": "managed"
+    }
+  },
+  "utility": {
+    "problem": "Review monitors then record an approved operational event. Read provider data first, then explicitly approve the selected change with operator write opt-in and a unique per-call approval key.",
+    "output": "Actual provider API results through local MCP tools"
+  },
+  "providerDocs": "https://docs.datadoghq.com/api/latest/using-the-api/",
+  "factory": "leadadapter-pipmcp",
+  "generatorVersion": 2
+}
